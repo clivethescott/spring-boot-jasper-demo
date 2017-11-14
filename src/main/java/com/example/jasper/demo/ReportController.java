@@ -36,14 +36,12 @@ public class ReportController {
     public void generateReport(HttpServletResponse response) {
         System.out.println("Exporting report");
 
-        try {
+        try (final Connection connection = dataSource.getConnection()) {
 
             response.setContentType("application/pdf");
             response.setHeader("Content-Disposition", "inline; filename=\"recon.pdf\"");
 
             final File reportFile = ResourceUtils.getFile("classpath:static/reports/sample.jrxml");
-
-            final Connection connection = dataSource.getConnection();
             final byte[] bytes = JasperConfig.getPdfReportBytes(new HashMap<>(), reportFile, connection);
 
             response.getOutputStream().write(bytes);
